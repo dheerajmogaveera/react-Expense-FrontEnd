@@ -1,0 +1,16 @@
+.Expense{
+   
+    width: 800px;
+    height: min-content;
+    margin: 10px;
+    font-weight: bold;
+padding: 5px;
+    background-color: bisque;
+    border: 1px solid black;
+}
+
+.Expense:focus{
+    border: 5px solid blue; 
+}
+
+
