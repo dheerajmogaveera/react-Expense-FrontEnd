@@ -38,7 +38,7 @@ const Expense = props => {
 		<div className="Expense">
 			<div className="modalCenter">
 				<div id="modal1" ref={modal} className="Modal">
-					<Button
+                    <Button
 						color="error"
 						variant="contained"
 						startIcon={<CloseIcon />}
@@ -49,19 +49,21 @@ const Expense = props => {
 				</div>
 			</div>
 			<Box component={'div'} sx={inputFormStyle}>
-				<div className="Expense">
-					<Button
+				<div className="Expense" id="id1" >
+                    <Button
+                        id="delete"
 						variant="contained"
 						size="small"
 						color="error"
-						component="label"
 						startIcon={<DeleteIcon />}
-						onClick={deleteExpense}
+                        onClick={deleteExpense}
+                    
 					/>
-					<Button
+                    <Button
+                        className="update"
+                        id="update"
 						variant="contained"
 						size="small"
-						component="label"
 						startIcon={<CreateIcon />}
 						onClick={event => {
 							context.setTitle(props.obj.title);
@@ -74,22 +76,22 @@ const Expense = props => {
 					/>
 					<br />
 					<Typography variant="h6">
-						<span className="text">
+						<span className="title">
 							{props.obj.title}
 						</span>
 					</Typography>
 					<Typography variant="h6" color={'green'} fontWeight="bold">
-						<span className="text">
+						<span className="amount">
 							${props.obj.amount}
 						</span>
 					</Typography>
 					<Typography variant="h6">
-						<span className="text">
+						<span className="categories">
 							{props.obj.categories}
 						</span>
 					</Typography>
 					<Typography variant="h6">
-						<span className="text">
+						<span className="note">
 							{props.obj.note}
 						</span>
 					</Typography>

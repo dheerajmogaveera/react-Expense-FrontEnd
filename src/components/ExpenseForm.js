@@ -1,38 +1,47 @@
 import {
 	Button,
+	Checkbox,
 	FormControl,
 	InputAdornment,
 	InputLabel,
+	ListItemText,
+	MenuItem,
 	OutlinedInput,
+	Select,
 } from '@mui/material';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import ExpenseContext from '../context/ExpenseContext';
 import '../css/ExpenseForm.css';
 import { addExpense, updateExpense } from '../services/ExpenseTrackerService';
+import { handleCategoryChange, handleExpenseUpdate } from '../services/ExpenseTrackerUtils';
 
+const categoryOptions = [
+	'Fuel',
+	'Dining',
+	'Shopping',
+	'Subscriptions',
+	'Travel',
+	'Other',
+];
+const MenuProps = {
+	PaperProps: {
+		style: {
+			maxHeight: 24 * 4.5 + 8,
+			width: 250,
+		},
+	},
+};
 const ExpenseForm = props => {
 	const context = useContext(ExpenseContext);
-	let body = {
-		title: context.title,
-		amount: context.amount,
-		categories: context.categories,
-		note: context.note,
-	};
-	const addOrUpDateExpense = () => {
-		if (props.type === 'add') {
-			addExpense(body)
-				.then(res => {
-					return res.json();
-				})
-				.then(res => context.addExpense(res));
-		} else {
-			body.id = props.Object.id;
-			updateExpense(body).then(res => {
-				context.setReload(!context.reload);
-			});
-		}
-	};
+	
+	const customCategory = useRef();
 
+	const addOrUpdateExpense = () => {
+		handleExpenseUpdate(event,context,props)
+	};
+	const handleChange = event => {
+		handleCategoryChange(event, context, customCategory);
+	};
 	useEffect(
 		() => {
 			context.setTitle(context.title);
@@ -72,19 +81,37 @@ const ExpenseForm = props => {
 				/>
 			</FormControl>
 
-			<FormControl fullWidth sx={{ m: 1 }} variant="filled">
-				<InputLabel htmlFor="category">Category</InputLabel>
-				<OutlinedInput
-					type="text"
-					sx={{ border: 2 }}
-					required
+			<FormControl sx={{ m: 1, width: '99%', border: 2 }} variant="filled">
+				<InputLabel id="demo-multiple-name-label">Category</InputLabel>
+				<Select
+					labelId="demo-multiple-name-label"
+					id="demo-multiple-name"
+					multiple
 					value={context.categories}
-					onChange={context.categoriesChange}
-					id="category"
-					endAdornment={<InputAdornment position="start" />}
-				/>
+					onChange={handleChange}
+					input={<OutlinedInput label="Name" />}
+					MenuProps={MenuProps}
+				>
+					{categoryOptions.map(name =>
+						<MenuItem key={name} value={name}>
+							{name}
+						</MenuItem>,
+					)}
+				</Select>
 			</FormControl>
-
+			<div ref={customCategory} style={{ display: 'none' }}>
+				<FormControl fullWidth sx={{ m: 1 }} variant="filled">
+					<InputLabel htmlFor="title">Custom Category</InputLabel>
+					<OutlinedInput
+						type="text"
+						sx={{ border: 2 }}
+						value={context.categories}
+						required
+						onChange={handleChange}
+						endAdornment={<InputAdornment position="start" />}
+					/>
+				</FormControl>
+			</div>
 			<FormControl fullWidth sx={{ m: 1 }} variant="filled">
 				<InputLabel htmlFor="note">Note</InputLabel>
 				<OutlinedInput
@@ -102,7 +129,7 @@ const ExpenseForm = props => {
 				variant="contained"
 				sx={{ border: 2 }}
 				style={{ marginLeft: '40%' }}
-				onClick={addOrUpDateExpense}
+				onClick={addOrUpdateExpense}
 			>
 				{props.type}
 			</Button>
