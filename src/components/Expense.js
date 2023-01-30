@@ -7,6 +7,10 @@ import ExpenseContext from '../context/ExpenseContext';
 import '../css/Expenses.css';
 import { deleteExpenseById } from '../services/ExpenseTrackerService';
 import ExpenseForm from './ExpenseForm';
+import {
+	inputFormStyle,
+	openUpdateForm,
+} from '../services/ExpenseTrackerUtils';
 
 const Expense = props => {
 	const context = useContext(ExpenseContext);
@@ -15,30 +19,20 @@ const Expense = props => {
 			context.setReload(!context.reload);
 		});
 	};
+
 	const modal = useRef();
+	const updateClick = () => {
+		openUpdateForm(props, context, modal);
+	};
 	const modalClose = () => {
 		modal.current.style.display = 'none';
 	};
-	const inputFormStyle = {
-		display: 'inline-block',
-		color: 'text.primary',
 
-		width: '50%',
-		height: 'max-content',
-		margin: '10px',
-		border: 3,
-		borderColor: 'grey.500',
-
-		borderRadius: 1,
-		boxShadow: 3,
-		typography: 'body1',
-		':hover': { border: 2, borderColor: 'blue' },
-	};
 	return (
 		<div className="Expense">
 			<div className="modalCenter">
 				<div id="modal1" ref={modal} className="Modal">
-                    <Button
+					<Button
 						color="error"
 						variant="contained"
 						startIcon={<CloseIcon />}
@@ -49,29 +43,22 @@ const Expense = props => {
 				</div>
 			</div>
 			<Box component={'div'} sx={inputFormStyle}>
-				<div className="Expense" id="id1" >
-                    <Button
-                        id="delete"
+				<div className="Expense" id="id1">
+					<Button
+						id="delete"
 						variant="contained"
 						size="small"
 						color="error"
 						startIcon={<DeleteIcon />}
-                        onClick={deleteExpense}
-                    
+						onClick={deleteExpense}
 					/>
-                    <Button
-                        className="update"
-                        id="update"
+					<Button
+						className="update"
+						id="update"
 						variant="contained"
 						size="small"
 						startIcon={<CreateIcon />}
-						onClick={event => {
-							context.setTitle(props.obj.title);
-							context.setAmount(props.obj.amount);
-							context.setCategories([...props.obj.categories]);
-							context.setNote(props.obj.note);
-							modal.current.style.display = 'block';
-						}}
+						onClick={updateClick}
 						sx={{ ml: 1 }}
 					/>
 					<br />
