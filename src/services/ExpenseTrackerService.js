@@ -1,5 +1,5 @@
 export const getExpenseByTitle = (title, expenseList) => {
-	expenseList = expenseList.filter(data => data.title === title);
+	expenseList = expenseList.filter(data => data.title.toUpperCase().startsWith(title.toUpperCase()));
 	return expenseList;
 };
 export const getExpenses = () => {

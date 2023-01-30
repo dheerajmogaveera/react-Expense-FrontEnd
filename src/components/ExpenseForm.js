@@ -8,6 +8,7 @@ import {
 	MenuItem,
 	OutlinedInput,
 	Select,
+	Typography,
 } from '@mui/material';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import ExpenseContext from '../context/ExpenseContext';
@@ -35,9 +36,9 @@ const ExpenseForm = props => {
 	const context = useContext(ExpenseContext);
 	
 	const customCategory = useRef();
-
+	const msg = useRef();
 	const addOrUpdateExpense = () => {
-		handleExpenseUpdate(event,context,props)
+		handleExpenseUpdate(event,context,props,msg)
 	};
 	const handleChange = event => {
 		handleCategoryChange(event, context, customCategory);
@@ -133,6 +134,7 @@ const ExpenseForm = props => {
 			>
 				{props.type}
 			</Button>
+			<Typography variant='h6' sx={{display:'none'}} ref={msg}>{context.msg }</Typography>
 		</div>
 	);
 };

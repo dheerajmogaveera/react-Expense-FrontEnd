@@ -33,7 +33,7 @@ export const inputFormStyle = {
   ':hover': { border: 2, borderColor: 'blue' },
 }
 
-export const handleExpenseUpdate = (event, context, props) => {
+export const handleExpenseUpdate = (event, context, props,msg) => {
   let body = {
     title: context.title,
     amount: context.amount,
@@ -42,14 +42,41 @@ export const handleExpenseUpdate = (event, context, props) => {
   }
   if (props.type === 'add') {
     addExpense(body)
-      .then((res) => {
-        return res.json()
+		.then((res) => {
+			if (res.status === 201) {
+				context.setMsg("Expense added successfully !!!")
+				context.expense.expenseArray.push(res.json())
+				msg.current.style.display = 'block'
+				msg.current.style.color = 'green'
+				return res.json()
+			}
+			else {
+				msg.current.color = 'red'
+				msg.current.style.display = 'block'
+				
+			    context.setMsg("Error occurred while adding the expense")
+			}
       })
       .then((res) => context.addExpense(res))
   } else {
     body.id = props.Object.id
-    updateExpense(body).then((res) => {
-      context.setReload(!context.reload)
+	  updateExpense(body).then((res) => {
+		if (res.status === 204) {
+			context.setMsg("Expense updated successfully !!!")
+			context.expense.expenseArray.map(item => {
+				if (item.id == body.id) return body;
+				else return item;
+			})
+			msg.current.style.display = 'block'
+			msg.current.style.color = 'green'
+			context.setReload(!context.reload)
+			
+		}
+		else {
+			msg.current.style.display = 'block'
+			msg.current.style.color = 'red'
+			context.setMsg("Error occurred while updating the expense")
+		  }
     })
   }
 }
