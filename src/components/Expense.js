@@ -26,6 +26,7 @@ const Expense = props => {
 	};
 	const modalClose = () => {
 		modal.current.style.display = 'none';
+		
 	};
 
 	return (
@@ -37,6 +38,7 @@ const Expense = props => {
 						variant="contained"
 						startIcon={<CloseIcon />}
 						onClick={modalClose}
+						data-testid="close1"
 						style={{ marginLeft: '85%' }}
 					/>
 					<ExpenseForm Object={props.obj} type="update" />
@@ -49,12 +51,14 @@ const Expense = props => {
 						variant="contained"
 						size="small"
 						color="error"
+						data-testid="delete"
 						startIcon={<DeleteIcon />}
 						onClick={deleteExpense}
 					/>
 					<Button
 						className="update"
 						id="update"
+						data-testid="update"
 						variant="contained"
 						size="small"
 						startIcon={<CreateIcon />}

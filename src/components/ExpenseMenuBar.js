@@ -51,17 +51,17 @@ const ExpenseBar = () => {
 					</Typography>
 
 					<List sx={{ display: 'flex', flexDirection: 'row' }}>
-						<ListItemButton>
+						<ListItemButton data-testid="home">
 							<Link
 								style={{ textDecoration: 'none', color: 'white' }}
 								to={'/'}
 							>
 								<ListItem>
-									<ListItemText>Expense</ListItemText>
+									<ListItemText>Home</ListItemText>
 								</ListItem>
 							</Link>
 						</ListItemButton>
-						<ListItemButton>
+						<ListItemButton data-testid="report"> 
 							<Link style={{ textDecoration: 'none', color: 'white' }} to={'/report'}>
 								<ListItem>
 									<ListItemText>Report</ListItemText>

@@ -36,6 +36,8 @@ const ExpenseForm = props => {
 	const context = useContext(ExpenseContext);
 	
 	const customCategory = useRef();
+	const form = useRef()
+	
 	const msg = useRef();
 	const addOrUpdateExpense = () => {
 		handleExpenseUpdate(event,context,props,msg)
@@ -49,17 +51,20 @@ const ExpenseForm = props => {
 			context.setAmount(context.amount);
 			context.setCategories(context.categories);
 			context.setNote(context.note);
+			form.current.addEventListener('submit',(e)=>{e.preventDefault();})
 		},
 		[context.title],
 	);
 
 	return (
-		<div className="TestRoute">
+		<div className="TestRoute" >
+		     <form ref={form} onSubmit={addOrUpdateExpense}>
 			<FormControl fullWidth sx={{ m: 1 }} variant="filled">
 				<InputLabel htmlFor="title">Title</InputLabel>
-				<OutlinedInput
+					<OutlinedInput
+						data-testid="title"
 					type="text"
-					sx={{ border: 2 }}
+				   
 					value={context.title}
 					required
 					onChange={context.titleChange}
@@ -72,7 +77,7 @@ const ExpenseForm = props => {
 				<InputLabel htmlFor="amount">Amount</InputLabel>
 				<OutlinedInput
 					type="number"
-					sx={{ border: 2 }}
+				
 					max="99999999"
 					required
 					value={context.amount}
@@ -82,12 +87,13 @@ const ExpenseForm = props => {
 				/>
 			</FormControl>
 
-			<FormControl sx={{ m: 1, width: '99%', border: 2 }} variant="filled">
-				<InputLabel id="demo-multiple-name-label">Category</InputLabel>
+			<FormControl sx={{ m: 1, width: '99%' }} variant="filled">
+				<InputLabel id="category-multiple-name-label">Category</InputLabel>
 				<Select
-					labelId="demo-multiple-name-label"
-					id="demo-multiple-name"
-					multiple
+					labelId="category-multiple-name-label"
+					id="category-multiple-name"
+						multiple
+						required
 					value={context.categories}
 					onChange={handleChange}
 					input={<OutlinedInput label="Name" />}
@@ -102,10 +108,11 @@ const ExpenseForm = props => {
 			</FormControl>
 			<div ref={customCategory} style={{ display: 'none' }}>
 				<FormControl fullWidth sx={{ m: 1 }} variant="filled">
-					<InputLabel htmlFor="title">Custom Category</InputLabel>
+					<InputLabel htmlFor="custom">Custom Category</InputLabel>
 					<OutlinedInput
+						id="custom"
 						type="text"
-						sx={{ border: 2 }}
+						
 						value={context.categories}
 						required
 						onChange={handleChange}
@@ -117,8 +124,8 @@ const ExpenseForm = props => {
 				<InputLabel htmlFor="note">Note</InputLabel>
 				<OutlinedInput
 					type="text"
-					sx={{ border: 2 }}
-					required
+					
+					
 					value={context.note}
 					onChange={context.noteChange}
 					id="note"
@@ -127,14 +134,16 @@ const ExpenseForm = props => {
 			</FormControl>
 
 			<Button
-				variant="contained"
+					variant="contained"
+					type='submit'
 				sx={{ border: 2 }}
 				style={{ marginLeft: '40%' }}
-				onClick={addOrUpdateExpense}
+				
 			>
 				{props.type}
-			</Button>
-			<Typography variant='h6' sx={{display:'none'}} ref={msg}>{context.msg }</Typography>
+				</Button>
+				</form>
+			<Typography variant='h6' sx={{display:'none',marginLeft:"10%"}} ref={msg}>{context.msg }</Typography>
 		</div>
 	);
 };

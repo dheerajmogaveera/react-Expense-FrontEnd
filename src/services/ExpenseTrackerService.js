@@ -1,5 +1,7 @@
 export const getExpenseByTitle = (title, expenseList) => {
-	expenseList = expenseList.filter(data => data.title.toUpperCase().startsWith(title.toUpperCase()));
+	expenseList = expenseList.filter(data =>
+		data.title.toUpperCase().startsWith(title.toUpperCase()),
+	);
 	return expenseList;
 };
 export const getExpenses = () => {
@@ -35,4 +37,15 @@ export const updateExpense = body => {
 
 export const generateReport = range => {
 	return fetch('/expenses/report?range=' + range);
+};
+
+export const generateReportForCustomRange = (range, startDate, endDate) => {
+	return fetch(
+		'/expenses/report?range=' +
+			range +
+			'&startDate=' +
+			startDate +
+			'&endDate=' +
+			endDate,
+	);
 };

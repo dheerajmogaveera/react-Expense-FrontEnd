@@ -1,4 +1,12 @@
-import { FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import {
+	Button,
+	FormControl,
+	InputLabel,
+	MenuItem,
+	Select,
+	TextField,
+	Typography,
+} from '@mui/material';
 import {
 	ArcElement,
 	BarElement,
@@ -9,9 +17,15 @@ import {
 	Title,
 	Tooltip,
 } from 'chart.js';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { generateReport } from '../services/ExpenseTrackerService';
+import {
+	generateReport,
+	generateReportForCustomRange,
+} from '../services/ExpenseTrackerService';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { dateFormatter, reportDataProcessing } from '../services/ReportUtils';
 
 ChartJS.register(
 	ArcElement,
@@ -24,23 +38,25 @@ ChartJS.register(
 );
 const Report = () => {
 	const [chartLabel, setChartLabel] = useState([]);
-  const [chartData, setChartData] = useState([]);
-  const [expensesByDate, setExpensesByDate] = useState([]);
+	const [chartData, setChartData] = useState([]);
+	const [expensesByDate, setExpensesByDate] = useState([]);
 	const [response, SetResponse] = useState({});
+	const [value, setValue] = useState(null);
+	const customDate = useRef();
 	const data1 = {
 		labels: chartLabel,
 		datasets: [
 			{
 				label: 'Expense Amount',
-				backgroundColor: "#d64161",
+				backgroundColor: '#d64161',
 				borderColor: 'rgba(0,0,0,1)',
 				borderWidth: 2,
 				data: chartData,
 			},
 		],
-  };
-  
-  const data2 = {
+	};
+	const startDate = useRef();
+	const data2 = {
 		labels: chartLabel,
 		datasets: [
 			{
@@ -51,33 +67,48 @@ const Report = () => {
 				data: expensesByDate,
 			},
 		],
-  };
+	};
 
 	const [range, setRange] = useState('');
-	const handleChange = event => {
-		setRange(event.target.value);
-		generateReport(event.target.value)
-			.then(data => {
-				return data.json();
-			})
-			.then(data => {
-				SetResponse(data);
-				console.log(data);
-				const label = [];
-        const value = [];
-        const value1 = [];
-				for (var key in data.amountByDate) {
-					label.push(key);
-				}
-				label.sort();
-				label.forEach(val => {
-          value.push(data.amountByDate[val]);
-          value1.push(data.numberOfExpensesByDays[val]);
-				});
-				setChartLabel(label);
-        setChartData(value);
-        setExpensesByDate(value1);
-			});
+	const [start, setStart] = useState(null);
+	const [end, setEnd] = useState(null);
+	const handleReportGeneration = event => {
+		if (range === 'week' || range === 'month') {
+			generateReport(range)
+				.then(data => {
+					return data.json();
+				})
+				.then(data =>
+					reportDataProcessing(
+						data,
+						SetResponse,
+						setChartLabel,
+						setChartData,
+						setExpensesByDate,
+					),
+				);
+		} else {
+			generateCustomReport();
+		}
+	};
+
+	const generateCustomReport = () => {
+		if (start !== null && end !== null) {
+			const [startDate, endDate] = dateFormatter(start, end);
+			generateReportForCustomRange('custom', startDate, endDate)
+				.then(data => {
+					return data.json();
+				})
+				.then(data =>
+					reportDataProcessing(
+						data,
+						SetResponse,
+						setChartLabel,
+						setChartData,
+						setExpensesByDate,
+					),
+				);
+		}
 	};
 
 	return (
@@ -89,14 +120,55 @@ const Report = () => {
 					id="demo-simple-select"
 					value={range}
 					label="Age"
-					onChange={handleChange}
+					onChange={event => {
+						{
+							if (event.target.value === 'custom')
+								customDate.current.style.display = 'block';
+							else customDate.current.style.display = 'none';
+							setRange(event.target.value);
+						}
+					}}
 				>
 					<MenuItem value={'week'}>Week</MenuItem>
 					<MenuItem value={'month'}>Month</MenuItem>
+					<MenuItem value={'custom'}>Custom</MenuItem>
 				</Select>
-      </FormControl>
-      
-      
+			</FormControl>
+			<Button variant={'contained'} onClick={handleReportGeneration}>
+				Go
+			</Button>
+			<h1>
+				{value}
+			</h1>
+			<br />
+			<br />
+			<div ref={customDate} style={{ display: 'none' }}>
+				<LocalizationProvider dateAdapter={AdapterDayjs}  >
+					<DatePicker
+						label="Start Date"
+						
+						value={start}
+						onChange={val => {
+							setStart(val);
+							console.log('Custom Report');
+						}}
+                        
+						renderInput={params => <TextField {...params} />}
+					/>
+				</LocalizationProvider>
+
+				<LocalizationProvider dateAdapter={AdapterDayjs}>
+					<DatePicker
+						label="End Date"
+						value={end}
+						onChange={val => {
+							setEnd(val);
+						}}
+						renderInput={params => <TextField {...params} />}
+					/>
+				</LocalizationProvider>
+			</div>
+			<br />
 			<div
 				style={{
 					height: '45%',
@@ -113,10 +185,9 @@ const Report = () => {
 								display: true,
 								text: 'Average amount per day',
 								fontSize: 20,
-                fontWeight: 'bold',
-                
-              },
-              
+								fontWeight: 'bold',
+							},
+
 							legend: {
 								display: true,
 								position: 'right',
@@ -147,7 +218,7 @@ const Report = () => {
 			</Typography>
 			<Typography variant="h6">
 				Total No of Expense:{response.totalExpenses}
-			</Typography >
+			</Typography>
 			<Typography variant="h6">
 				Average Amount Per Day:{response.averageAmountPerDay}$
 			</Typography>
