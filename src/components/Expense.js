@@ -48,6 +48,7 @@ const Expense = props => {
 				<div className="Expense" id="id1">
 					<Button
 						id="delete"
+						
 						variant="contained"
 						size="small"
 						color="error"
